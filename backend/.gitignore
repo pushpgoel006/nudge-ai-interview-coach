@@ -1,0 +1,17 @@
+__pycache__/
+*.pyc
+
+chroma_db/
+interviews.db
+
+uploads/
+.env
+.neon
+.agents/
+.claude/
+skills-lock.json
+
+.venv/
+.env.*
+!.env.example
+node_modules/
