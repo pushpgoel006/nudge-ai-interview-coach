@@ -15,4 +15,4 @@ skills-lock.json
 .env.*
 !.env.example
 node_modules/
-backend/.gitignore~
+*~
