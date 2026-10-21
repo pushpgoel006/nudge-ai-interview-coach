@@ -1,0 +1,35 @@
+# Render Blueprint for the Nudge API (the Python backend). See backend/deploy/README.md.
+# Render: New + > Blueprint > pick this repo. Fill in the two secrets marked "sync: false" when asked.
+services:
+  - type: web
+    name: nudge-api
+    runtime: docker
+    plan: free
+    region: ohio # closest to the Neon database (aws-us-east-2)
+    dockerfilePath: ./backend/deploy/huggingface/Dockerfile
+    dockerContext: ./backend
+    healthCheckPath: /api/health
+    autoDeploy: true
+    envVars:
+      - key: API_ENV
+        value: production
+      - key: LLM_PROVIDER
+        value: groq
+      # Your site's address, no trailing slash. Writes from any other origin are refused.
+      - key: API_ALLOWED_ORIGINS
+        value: https://nudge-ai-interview-coach.vercel.app
+      - key: API_SECRET_KEY
+        generateValue: true
+      - key: GROQ_API_KEY
+        sync: false
+      - key: DATABASE_URL
+        sync: false
+      # The free plan has 512 MB of memory and the embedding model is tight in it. These keep the process lean.
+      - key: MALLOC_ARENA_MAX
+        value: "2"
+      - key: TOKENIZERS_PARALLELISM
+        value: "false"
+      - key: OMP_NUM_THREADS
+        value: "1"
+      - key: MKL_NUM_THREADS
+        value: "1"

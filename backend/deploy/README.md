@@ -63,6 +63,22 @@ Or set `API_ACCOUNT_TTL_DAYS=14` and `API_ACCOUNT_KEEP_EMAILS=you@example.com` o
 **Both delete every account older than the cutoff, including yours, unless its email is kept.** Run the preview first,
 and check which database `DATABASE_URL` points at.
 
+### Alternative: Render (free plan)
+
+Hugging Face now needs a paid plan for Docker Spaces. The repo root has a `render.yaml` Blueprint that builds the same
+Dockerfile on Render:
+
+1. Render dashboard: **New + > Blueprint**, connect GitHub, pick this repo. Render reads `render.yaml`.
+2. When asked, enter the two secrets: `GROQ_API_KEY` and `DATABASE_URL` (a Neon connection string, ideally a
+   separate demo database). `API_SECRET_KEY` is generated for you.
+3. After the first deploy, `https://<service>.onrender.com/api/health?deep=true` should return
+   `{"status":"ok","database":"ok"}`.
+
+Limits of the free plan: 512 MB of memory (the embedding model is a tight fit; measured peak was about 500 MB
+resident when run locally), the service sleeps after 15 minutes without traffic and takes about a minute to wake,
+and there is no persistent disk, so indexed documents are lost on every restart (the API marks them
+"Needs re-adding"). Accounts, sessions and scores live in Neon and survive.
+
 ## 2. Site on Vercel
 
 1. Import the `nudge-web` folder as a project (framework: Next.js).
