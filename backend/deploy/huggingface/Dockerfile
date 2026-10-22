@@ -23,6 +23,8 @@ RUN grep -v -i -E '^(nvidia-|cuda-|triton|torch==)' requirements.txt > requireme
     && pip install -r requirements.space.txt
 
 COPY --chown=user . /app
+# /app itself is created by root (WORKDIR), so the app user could not create ./uploads or ./chroma_db.
+RUN mkdir -p /app/uploads /app/chroma_db && chown user:user /app /app/uploads /app/chroma_db
 USER user
 
 # Fetch the embedding model at build time so the first request is not a cold download.
