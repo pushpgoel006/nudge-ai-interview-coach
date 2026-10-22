@@ -74,8 +74,9 @@ Dockerfile on Render:
 3. After the first deploy, `https://<service>.onrender.com/api/health?deep=true` should return
    `{"status":"ok","database":"ok"}`.
 
-Limits of the free plan: 512 MB of memory (the embedding model is a tight fit; measured peak was about 500 MB
-resident when run locally), the service sleeps after 15 minutes without traffic and takes about a minute to wake,
+Limits of the free plan: 512 MB of memory. The image sets `EMBEDDINGS_BACKEND=onnx` (the same all-MiniLM-L6-v2 model
+through ONNX Runtime, no PyTorch), which measured about 250 MB resident at peak against about 500 MB with PyTorch.
+The service sleeps after 15 minutes without traffic and takes about a minute to wake,
 and there is no persistent disk, so indexed documents are lost on every restart (the API marks them
 "Needs re-adding"). Accounts, sessions and scores live in Neon and survive.
 
