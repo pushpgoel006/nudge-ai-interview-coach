@@ -19,17 +19,16 @@ from api.data import purge_expired_accounts
 from api.deps import get_settings
 from api.routes import account, auth, chat, dashboard, documents, dsa, resume, sessions, theory
 from database import models  # noqa: F401  (registers the tables on Base)
-from database.db import Base, DATABASE_URL, engine
+from database.db import Base, engine
 
 SAFE_METHODS = {"GET", "HEAD", "OPTIONS"}
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    # Same idempotent create_all that database/init_db.py runs. Hosted Postgres is
-    # assumed to be set up already; only local SQLite is created automatically.
-    if DATABASE_URL.startswith("sqlite"):
-        Base.metadata.create_all(bind=engine)
+    # Same idempotent create_all that database/init_db.py runs: it only creates tables that are
+    # missing and never alters existing ones, so it is safe on a fresh Postgres and on a live one.
+    Base.metadata.create_all(bind=engine)
     usage.ensure_table()  # the API's one extra table, created if missing
     usage.prune_older_than(3)
     settings = get_settings()
